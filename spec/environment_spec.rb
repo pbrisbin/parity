@@ -26,11 +26,12 @@ describe Parity::Environment do
   end
 
   it 'automatically restarts processes when it migrates the database' do
-    Kernel.stub(:system)
+    Kernel.stub(:system).and_return(true)
 
     Parity::Environment.new('production', ['migrate']).run
 
     expect(Kernel).to have_received(:system).with(migrate)
+    expect(Kernel).to have_received(:system).with(restart)
   end
 
   it 'tails logs' do
@@ -49,6 +50,12 @@ describe Parity::Environment do
     expect(Kernel).to have_received(:system).with(open)
   end
 
+  it 'restores backups from production to development'
+  it 'restores backups from staging to development'
+  it 'restores backups from production to staging'
+
+  private
+
   def heroku_backup
     "heroku pgbackups:capture --expire --remote production"
   end
@@ -62,10 +69,11 @@ describe Parity::Environment do
   end
 
   def migrate
-     %{
-        heroku run rake db:migrate --remote production &&
-        heroku restart --remote production
-      }
+    "heroku run rake db:migrate --remote production"
+  end
+
+  def restart
+    "heroku restart --remote production"
   end
 
   def tail
