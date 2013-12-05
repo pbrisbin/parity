@@ -50,9 +50,17 @@ describe Parity::Environment do
     expect(Kernel).to have_received(:system).with(open)
   end
 
-  it 'restores backups from production to development'
-  it 'restores backups from staging to development'
-  it 'restores backups from production to staging'
+  it 'restores backups from <argument> to <environment>' do
+    backup = double('backup', restore: nil)
+    Parity::Backup.stub(new: backup)
+
+    Parity::Environment.new('environment', ['restore', 'argument']).run
+
+    expect(Parity::Backup).to have_received(:new).with(
+      from: 'argument', to: 'environment'
+    )
+    expect(backup).to have_received(:restore)
+  end
 
   private
 
