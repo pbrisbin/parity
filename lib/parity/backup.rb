@@ -7,7 +7,10 @@ module Parity
     end
 
     def restore
-      if to == 'development'
+      case to
+      when 'production'
+        raise ArgumentError, 'Refusing to destructively restore production'
+      when 'development'
         restore_to_development
       else
         restore_to_pass_through

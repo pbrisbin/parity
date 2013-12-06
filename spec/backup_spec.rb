@@ -21,6 +21,12 @@ describe Parity::Backup do
     expect(Kernel).to have_received(:system).with(heroku_pass_through)
   end
 
+  it 'refuses to restore to production' do
+    expect {
+      Parity::Backup.new(from: 'staging', to: 'production').restore
+    }.to raise_error(ArgumentError)
+  end
+
   def database_config_path
     File.join(File.dirname(__FILE__), 'fixtures', 'database.yml')
   end
