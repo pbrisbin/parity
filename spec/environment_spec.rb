@@ -18,6 +18,7 @@ describe Parity::Environment do
   end
 
   it 'opens the log2viz visualization' do
+    ENV['BROWSER'] = nil
     Kernel.stub(:system)
 
     Parity::Environment.new('production', ['log2viz']).run
