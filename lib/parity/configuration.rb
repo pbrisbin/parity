@@ -16,16 +16,4 @@ module Parity
       environment # TODO: configuration overrides
     end
   end
-
-  class << self
-    attr_accessor :config
-  end
-
-  def self.configure
-    self.config ||= Configuration.new
-
-    if block_given?
-      yield config
-    end
-  end
 end

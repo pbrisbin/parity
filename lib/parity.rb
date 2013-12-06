@@ -12,6 +12,14 @@ module Parity
       exit 1
     end
 
+    def configure
+      yield config if block_given?
+    end
+
+    def config
+      @config ||= Configuration.new
+    end
+
     private
 
     def print_error(ex, show_usage = false)
