@@ -1,8 +1,6 @@
 module Parity
   class Environment
     def initialize(environment, arguments)
-      invalid_usage! if arguments.empty?
-
       @environment = environment
       @arguments = arguments
       @app_name = Parity.config.heroku_app_name(environment)
@@ -16,8 +14,6 @@ module Parity
 
     rescue NoMethodError
       passthrough
-    rescue ArgumentError
-      invalid_usage!
     end
 
     def backup
@@ -47,10 +43,6 @@ module Parity
     private
 
     attr_reader :environment, :arguments, :app_name, :remote_name
-
-    def invalid_usage!
-      puts Usage.new and exit 1
-    end
 
     def passthrough
       heroku arguments.join(' ').strip

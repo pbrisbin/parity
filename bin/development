@@ -2,4 +2,4 @@
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'parity')
 
-Parity::Environment.new('development', ARGV).run
+Parity.run('development', ARGV)
