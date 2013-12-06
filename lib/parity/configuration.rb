@@ -1,19 +1,38 @@
+require 'delegate'
+require 'ostruct'
+
 module Parity
-  class Configuration
-    attr_accessor :database_config_path, :heroku_app_basename
+  class Configuration < SimpleDelegator
+    LOCAL_CONFIGURATION = '.parity.yml'
 
     def initialize
-      @database_config_path = 'config/database.yml'
+      super(OpenStruct.new(
+        heroku_app_name: "%{basename}-%{environment}",
+        heroku_app_basename: File.basename(Dir.pwd),
+        heroku_remote_name: "%{environment}",
+        database_config_path: 'config/database.yml',
+      ))
+
+      load_local if File.exists?(LOCAL_CONFIGURATION)
     end
 
     def heroku_app_name(environment)
-      basename = heroku_app_basename || File.basename(Dir.pwd)
-
-      [basename, environment].join('-') # TODO: configuration overrides
+      self[:heroku_app_name] % {
+        basename: heroku_app_basename,
+        environment: environment
+      }
     end
 
     def heroku_remote_name(environment)
-      environment # TODO: configuration overrides
+      self[:heroku_remote_name] % { environment: environment }
+    end
+
+    private
+
+    def load_local
+      YAML.load(File.read(LOCAL_CONFIGURATION)).each do |key,value|
+        send("#{key}=", value)
+      end
     end
   end
 end
