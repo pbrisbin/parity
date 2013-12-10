@@ -23,15 +23,15 @@ module Parity
     end
 
     def run_via_cli
-      Kernel.system "heroku #{pass_through} --remote #{environment}"
+      Kernel.system "heroku #{pass_through} --remote #{heroku_remote_name}"
     end
 
     def backup
-      Kernel.system "heroku pgbackups:capture --expire --remote #{environment}"
+      Kernel.system "heroku pgbackups:capture --expire --remote #{heroku_remote_name}"
     end
 
     def console
-      Kernel.system "heroku run console --remote #{environment}"
+      Kernel.system "heroku run console --remote #{heroku_remote_name}"
     end
 
     def log2viz
@@ -40,21 +40,21 @@ module Parity
 
     def migrate
       Kernel.system %{
-        heroku run rake db:migrate --remote #{environment} &&
-        heroku restart --remote #{environment}
+        heroku run rake db:migrate --remote #{heroku_remote_name} &&
+        heroku restart --remote #{heroku_remote_name}
       }
     end
 
     def tail
-      Kernel.system "heroku logs --tail --remote #{environment}"
+      Kernel.system "heroku logs --tail --remote #{heroku_remote_name}"
     end
 
     def heroku_app_name
-      [basename, environment].join('-')
+      Parity.config.heroku_app_name(environment)
     end
 
-    def basename
-      Parity.config.heroku_app_basename || Dir.pwd.split('/').last
+    def heroku_remote_name
+      Parity.config.heroku_remote_name(environment)
     end
 
     def pass_through
